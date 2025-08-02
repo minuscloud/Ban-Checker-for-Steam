@@ -5,7 +5,7 @@ let greentext = true;
 const checkBans = () => {
   const friendEls = document.querySelectorAll('.friends_content .persona');
   const uniquePlayers = [
-    ...new Set(Array.from(friendEls, persona => persona.dataset.steamid))
+    ...new Set(Array.from(friendEls, p => p.dataset.steamid))
   ];
   const batches = uniquePlayers.reduce((arr, player, i) => {
     const idx = Math.floor(i / 100);
@@ -19,36 +19,37 @@ const checkBans = () => {
     );
     playerEls.forEach(playerEl => {
       if (player.NumberOfVACBans > 0 || player.NumberOfGameBans > 0) {
-        const verdictEl = document.createElement('div');
-        verdictEl.className = 'banchecker-verdict';
-        let verdict =
-          (player.NumberOfVACBans > 0 ? `${player.NumberOfVACBans} VAC` : '') +
-          (player.NumberOfVACBans > 0 && player.NumberOfGameBans > 0
-            ? ' & '
-            : '') +
-          (player.NumberOfGameBans > 0
-            ? `${player.NumberOfGameBans} Game`
-            : '') +
-          ` ban${
-            player.NumberOfVACBans + player.NumberOfGameBans > 1 ? 's' : ''
-          } on record\n` +
-          (player.DaysSinceLastBan !== undefined &&
-          player.DaysSinceLastBan !== null
-            ? `Last ban occured ${player.DaysSinceLastBan} day${
-                player.DaysSinceLastBan !== 1 ? 's' : ''
-              } ago`
-            : '');
-
-        const verdictElText = document.createElement('span');
-        verdictElText.innerHTML = verdict.replace(/\n/g, '<br>');
-        verdictEl.appendChild(verdictElText);
-
         const nameBlock = playerEl.querySelector('.friend_block_content');
         if (nameBlock) {
-          nameBlock.querySelector('.banchecker-verdict')?.remove();
           nameBlock.querySelector('.friend_last_online_text')?.remove();
           nameBlock.querySelector('.friend_small_text')?.remove();
-          nameBlock.appendChild(verdictEl);
+
+          let text = '';
+          if (player.NumberOfGameBans) {
+            text +=
+              player.NumberOfGameBans +
+              ' OW ban' +
+              (player.NumberOfGameBans > 1 ? 's' : '');
+          }
+          if (player.NumberOfVACBans) {
+            if (text) text += ', ';
+            text +=
+              player.NumberOfVACBans +
+              ' VAC ban' +
+              (player.NumberOfVACBans > 1 ? 's' : '');
+          }
+          text +=
+            ' ' +
+            player.DaysSinceLastBan +
+            ' day' +
+            (player.DaysSinceLastBan > 1 ? 's' : '') +
+            ' ago.';
+
+          const banSpan = document.createElement('span');
+          banSpan.className = 'banchecker-bantext';
+          banSpan.textContent = text;
+
+          nameBlock.appendChild(banSpan);
         }
       }
     });
@@ -64,14 +65,6 @@ const checkBans = () => {
       },
       (data, error) => {
         if (error !== undefined) {
-          console.log(
-            `Error while scanning players for bans:\n${error}` +
-              (retryCount > 0
-                ? `\n\nRetrying to scan... ${
-                    maxRetries - retryCount
-                  }/${maxRetries}`
-                : `\n\nCouldn't scan for bans after ${maxRetries} retries :(`)
-          );
           if (retryCount > 0)
             setTimeout(() => fetchBatch(i, retryCount - 1), 3000);
           return;
@@ -79,8 +72,6 @@ const checkBans = () => {
         data.json.players.forEach(player => doPlayer(player));
         if (batches.length > i + 1) {
           setTimeout(() => fetchBatch(i + 1, maxRetries), 1000);
-        } else {
-          console.log("Looks like we're done.");
         }
       }
     );

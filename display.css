@@ -97,30 +97,15 @@
   border-color: #66c0f4;
   color: #fff;
 }
-.friend_block_content:has(.banchecker-verdict) {
-  white-space: normal !important;
-  text-overflow: unset !important;
-  overflow: visible !important;
-  margin: 0 !important;
-  padding-right: 0 !important;
-}
-.banchecker-verdict {
-  color: #d63434;
-  font-size: 12px;
-  margin-top: 2px;
+.banchecker-bantext {
   display: block;
-  padding: 0;
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  line-height: 1.3;
-  cursor: default;
+  color: #ff4949;
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 4px;
+  margin-bottom: 0;
+  line-height: 1.25;
   white-space: normal;
   word-break: break-word;
-  overflow: visible !important;
-  z-index: 1;
-}
-.banchecker-verdict span {
-  padding: 0 !important;
-  white-space: normal !important;
+  cursor: default;
 }
