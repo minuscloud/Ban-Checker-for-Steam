@@ -47,6 +47,7 @@ const checkBans = () => {
         if (nameBlock) {
           nameBlock.querySelector('.banchecker-verdict')?.remove();
           nameBlock.querySelector('.friend_last_online_text')?.remove();
+          nameBlock.querySelector('.friend_small_text')?.remove();
           nameBlock.appendChild(verdictEl);
         }
       }
