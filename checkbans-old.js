@@ -83,7 +83,7 @@ function setVacation(player) {
       if (player.NumberOfGameBans) {
         text +=
           player.NumberOfGameBans +
-          ' OW ban' +
+          ' Game ban' +
           (player.NumberOfGameBans > 1 ? 's' : '');
       }
 
